@@ -15,6 +15,8 @@ var oracledb = require('oracledb');
 //var o = {};
 
 var o = {
+  dbName:null,
+  tableName:null,
   fromString: null,
   whereString: null,
   selectString: null,
@@ -28,9 +30,9 @@ var o = {
 
     console.log("connecting to database");
     oracledb.getConnection({
-        user: "system", //username
-        password: "pass", //password
-        connectString: "ODDL" //connection string
+        user: "user",
+        password: "pass",
+        connectString: "CONN_STRING"
       },
       function(err, con) {
         if (err) {
@@ -58,6 +60,8 @@ var o = {
   },
   clearData:function(){
 
+    this.dbName= null;
+    this.tableName= null;
     this.fromString =  null;
     this.whereString =  null;
     this.selectString =  null;
@@ -75,6 +79,8 @@ var o = {
       this.fromString = null;
     }
     if (dbName && tableName) {
+      this.dbName = dbName;
+      this.tableName = tableName;
       this.fromString = "FROM " + dbName + "." + tableName + " ";
     }
    
@@ -88,6 +94,8 @@ var o = {
       this.intoString = null;
     }
     if (dbName && tableName) {
+      this.dbName = dbName;
+      this.tableName = tableName;
       this.intoString = "INSERT INTO " + dbName + "." + tableName + " ";
     }
     
@@ -246,13 +254,60 @@ var o = {
         query, valueString,options,// bind value for :id 
         function(err, result) {
 
-          if (err) {
-            console.error(err.message);
-            cb(null);
-          }
-          cb(result.rows || result);
-          o.clearData();
-          o.releaseConnection(con);
+          if (err) {console.error(err.message); cb(null); } 
+
+          if(o.intoString){
+            //now insert query is successfull, but we need to return the lastinsert id, we have to do it manually in oracle
+          //this function will only execute if this is an insert query, not required for fetch query
+          //we assume that the sequence name will be like this 'table_name_seq'
+          //console.log("select "+o.dbName+"."+o.tableName+"_id_seq.nextval");
+          //con.execute("select "+o.dbName+"."+o.tableName+"_seq.nextval from dual", [], {}, function(err, nextval) {
+
+            //if (err) {console.error(err.message); cb(null); } 
+            //no error here
+             con.execute("select "+o.dbName+"."+o.tableName+"_id_seq.currval from dual", [], {}, function(err, currval) {
+            
+              if (err) {console.error(err.message); cb(null); } 
+              //no error here
+              
+              var last_insert_id = currval.rows[0][0] ;
+             
+            //console.log("select * from "+o.dbName+"."+o.tableName+" where id="+last_insert_id);
+            con.execute("select * from "+o.dbName+"."+o.tableName+" where country_id="+last_insert_id, [], {outFormat: oracledb.OBJECT,maxRows: 50000}, function(err, lastRow) {
+
+               if (err) {console.error(err.message); cb(null); } 
+
+                //send responce
+                //console.log('sendddddddddddddddddddding responce');
+                cb(lastRow.rows);
+                
+                //reset variables
+                o.clearData();
+                //release oracle connection
+                o.releaseConnection(con);
+
+              });
+
+            });
+
+           }else{
+
+                //send responce
+                cb(result.rows);
+                
+                //reset variables
+                o.clearData();
+                //release oracle connection
+                o.releaseConnection(con);
+
+           }
+
+          
+            
+           
+
+          //});
+          
 
         });
     });

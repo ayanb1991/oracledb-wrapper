@@ -8,7 +8,7 @@ But it's pretty much low level. So I wanted a wrapper which can provide easy que
 >Please change database connection parameters in /node_modules/node-oracledb-wrapper/index.js under 'connect' function.
 
 ```
-require node-oracledb-wrapper
+//require node-oracledb-wrapper
 var db = require('node-oracledb-wrapper');
 
 //insert example

@@ -1,9 +1,3 @@
-Hi, I have faced problems writing huge line of queries when using 'node-oracledb', which is the official Oracle driver for node.
-But it's pretty much low level. So I wanted a wrapper which can provide easy query building like Bookshelf.js or Knex.js. I have tried a little and I expect others to contribute in it, if you found it worthy please do a pull request. Thanks. Ayan.
-
-
-Examples
----------------------------------
 /**
 * change database connection parameters in /node_modules/node-oracledb-wrapper/index.js under 'connect' function.
 */
@@ -71,6 +65,3 @@ db.delete().from('db_main','country_master').where({country_name:'Zimhalka'}).ex
 	res.jsonp(responce);
 //if deleted successfully responce will be {"rowsAffected": 1 } or {"rowsAffected": 0 } if failed
 });
-
-
-Basic CRUD functions are working now, I have to run tests on these, after that I will work on other methods. Obviously forks and pull requests are welcome. 

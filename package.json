@@ -1,0 +1,21 @@
+{
+  "name": "oracledb-wrapper",
+  "private": true,
+  "version": "0.0.1",
+  "description": "a oracledb-wrapper application",
+  "keywords": [],
+  "dependencies": {
+    "oracledb": "^1.5.0"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "debug": "node debug app.js"
+  },
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ayanb1991/oracledb-wrapper.git"
+  },
+  "author": "ayanb1991",
+  "license": "apache"
+}
